@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Register Adyen payment methods with Forter CompositePaymentMethodProvider -->
+    <type name="Tapbuy\Forter\Model\CompositePaymentMethodProvider">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="adyen" xsi:type="object">Tapbuy\ForterAdyen\Model\PaymentMethodProvider</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Add Forter data to Adyen payment authorization request -->
+    <virtualType name="AdyenPaymentCcAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="forterData" xsi:type="string">Tapbuy\ForterAdyen\Gateway\Request\ForterDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+</config>
