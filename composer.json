@@ -7,8 +7,11 @@
         "OSL-3.0"
     ],
     "require": {
-        "tapbuy/magento2-forter": "^1.1",
-        "adyen/module-payment": "*"
+        "php": "^7.4 || ^8.1",
+        "magento/framework": "^103.0",
+        "magento/module-payment": "^100.4",
+        "tapbuy/magento2-forter": "^1.0",
+        "adyen/module-payment": "^9.0 || ^10.0"
     },
     "autoload": {
         "files": [
