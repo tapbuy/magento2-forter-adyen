@@ -7,11 +7,11 @@ namespace Tapbuy\ForterAdyen\Gateway\Request;
 use Tapbuy\Forter\Api\Data\CheckoutDataInterface;
 use Tapbuy\Forter\Api\PaymentMethodProviderInterface;
 use Tapbuy\Forter\Observer\OrderValidation\PaymentPlaceStart;
+use Tapbuy\RedirectTracking\Logger\TapbuyLogger;
 use Exception;
 use Magento\Payment\Gateway\Data\PaymentDataObject;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Psr\Log\LoggerInterface;
 
 class ForterDataBuilder implements BuilderInterface
 {
@@ -33,11 +33,11 @@ class ForterDataBuilder implements BuilderInterface
 
     /**
      * @param PaymentMethodProviderInterface $paymentMethodProvider
-     * @param LoggerInterface $logger
+     * @param TapbuyLogger $logger
      */
     public function __construct(
         private readonly PaymentMethodProviderInterface $paymentMethodProvider,
-        private readonly LoggerInterface $logger
+        private readonly TapbuyLogger $logger
     ) {
     }
 
@@ -79,14 +79,20 @@ class ForterDataBuilder implements BuilderInterface
                 || in_array(self::REQUIRED_3DS_CHALLENGE, $recommendations, true)
             ) {
                 $request['body'] = $this->buildForterData($recommendations, $threeDsAuthOnExclusion);
+
+                $this->logger->debug('Forter-Adyen: Built Forter data for Adyen request', [
+                    'order_id' => $paymentDataObject->getOrder()->getOrderIncrementId(),
+                    'payment_method' => $payment->getMethod(),
+                    'forter_decision' => $forterDecision,
+                    'recommendations' => $recommendations,
+                    'three_ds_auth_on_exclusion' => $threeDsAuthOnExclusion,
+                    'request_body' => $request['body'] ?? [],
+                ]);
             }
 
             return $request;
         } catch (Exception $e) {
-            $this->logger->error(
-                'Error during Adyen transaction building: ' . $e->getMessage(),
-                ['exception' => $e]
-            );
+            $this->logger->logException('Error during Adyen Forter data building', $e);
         }
 
         return $request;
