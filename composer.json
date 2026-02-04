@@ -2,13 +2,16 @@
     "name": "tapbuy/magento2-forter-adyen",
     "description": "Tapbuy Forter Adyen Integration for Magento 2",
     "type": "magento2-module",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "license": [
         "OSL-3.0"
     ],
     "require": {
+        "php": "^7.4 || ^8.1",
+        "magento/framework": "^103.0",
+        "magento/module-payment": "^100.4",
         "tapbuy/magento2-forter": "^1.1",
-        "adyen/module-payment": "*"
+        "adyen/module-payment": "^9.0 || ^10.0"
     },
     "autoload": {
         "files": [

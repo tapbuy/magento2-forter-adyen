@@ -9,6 +9,13 @@
         </arguments>
     </type>
 
+    <!-- Configure ForterDataBuilder with TapbuyLogger -->
+    <type name="Tapbuy\ForterAdyen\Gateway\Request\ForterDataBuilder">
+        <arguments>
+            <argument name="logger" xsi:type="object">Tapbuy\RedirectTracking\Logger\TapbuyLogger</argument>
+        </arguments>
+    </type>
+
     <!-- Add Forter data to Adyen payment authorization request -->
     <virtualType name="AdyenPaymentCcAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
         <arguments>
