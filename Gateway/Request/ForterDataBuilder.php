@@ -7,7 +7,7 @@ namespace Tapbuy\ForterAdyen\Gateway\Request;
 use Tapbuy\Forter\Api\Data\CheckoutDataInterface;
 use Tapbuy\Forter\Api\PaymentMethodProviderInterface;
 use Tapbuy\Forter\Observer\OrderValidation\PaymentPlaceStart;
-use Tapbuy\RedirectTracking\Logger\TapbuyLogger;
+use Tapbuy\RedirectTracking\Api\LoggerInterface;
 use Exception;
 use Magento\Payment\Gateway\Data\PaymentDataObject;
 use Magento\Payment\Gateway\Helper\SubjectReader;
@@ -33,11 +33,11 @@ class ForterDataBuilder implements BuilderInterface
 
     /**
      * @param PaymentMethodProviderInterface $paymentMethodProvider
-     * @param TapbuyLogger $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(
         private readonly PaymentMethodProviderInterface $paymentMethodProvider,
-        private readonly TapbuyLogger $logger
+        private readonly LoggerInterface $logger
     ) {
     }
 
