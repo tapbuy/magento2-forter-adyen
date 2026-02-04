@@ -69,13 +69,13 @@ class ForterDataBuilder implements BuilderInterface
             $recommendations = $payment->getAdditionalInformation(PaymentPlaceStart::PRE_RECOMMENDATIONS_KEY) ?? [];
 
             // Get 3DS config from payment additional info (stored by PaymentPlaceStart from tapbuy-api response)
-            $threeDsAuthOnExclusion = $payment->getAdditionalInformation(PaymentPlaceStart::THREE_DS_AUTH_ON_EXCLUSION_KEY)
-                ?? CheckoutDataInterface::THREE_DS_AUTH_ALWAYS;
+            $threeDsAuthOnExclusion = $payment->getAdditionalInformation(
+                PaymentPlaceStart::THREE_DS_AUTH_ON_EXCLUSION_KEY
+            ) ?? CheckoutDataInterface::THREE_DS_AUTH_ALWAYS;
 
             // Process recommendations on "approve" decision
             // OR when Forter recommends 3DS challenge (even on "decline" - give customer a chance to verify)
-            if (
-                $forterDecision === CheckoutDataInterface::ACTION_APPROVE
+            if ($forterDecision === CheckoutDataInterface::ACTION_APPROVE
                 || in_array(self::REQUIRED_3DS_CHALLENGE, $recommendations, true)
             ) {
                 $request['body'] = $this->buildForterData($recommendations, $threeDsAuthOnExclusion);
