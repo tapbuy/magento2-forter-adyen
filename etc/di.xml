@@ -9,10 +9,10 @@
         </arguments>
     </type>
 
-    <!-- Configure ForterDataBuilder with TapbuyLogger -->
+    <!-- Configure ForterDataBuilder with LoggerInterface (resolved via preference in redirect-tracking) -->
     <type name="Tapbuy\ForterAdyen\Gateway\Request\ForterDataBuilder">
         <arguments>
-            <argument name="logger" xsi:type="object">Tapbuy\RedirectTracking\Logger\TapbuyLogger</argument>
+            <argument name="logger" xsi:type="object">Tapbuy\RedirectTracking\Api\LoggerInterface</argument>
         </arguments>
     </type>
 
