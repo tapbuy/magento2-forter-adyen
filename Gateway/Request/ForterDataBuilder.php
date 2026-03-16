@@ -90,7 +90,8 @@ class ForterDataBuilder implements BuilderInterface
             }
 
             return $request;
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $e) {
+            // Best-effort builder — must never break payment request building.
             $this->logger->logException('Error during Adyen Forter data building', $e);
         }
 
