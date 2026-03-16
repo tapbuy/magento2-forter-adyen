@@ -8,7 +8,6 @@ use Tapbuy\Forter\Api\Data\CheckoutDataInterface;
 use Tapbuy\Forter\Api\PaymentMethodProviderInterface;
 use Tapbuy\Forter\Observer\OrderValidation\PaymentPlaceStart;
 use Tapbuy\RedirectTracking\Api\LoggerInterface;
-use Exception;
 use Magento\Payment\Gateway\Data\PaymentDataObject;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Request\BuilderInterface;
@@ -91,7 +90,7 @@ class ForterDataBuilder implements BuilderInterface
             }
 
             return $request;
-        } catch (Exception $e) {
+        } catch (\RuntimeException $e) {
             $this->logger->logException('Error during Adyen Forter data building', $e);
         }
 
