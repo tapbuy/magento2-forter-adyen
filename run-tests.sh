@@ -4,6 +4,7 @@
 #
 # Dependencies (must be cloned next to this module directory):
 #   - tapbuy/magento-redirect-plugin  →  ../redirect-tracking
+#   - tapbuy/data-scrubber            →  ../data-scrubber
 #   - tapbuy/magento2-forter          →  ../forter
 #   - Adyen/adyen-magento2 is cloned automatically to ~/.tapbuy-ci-cache/ on first run
 set -euo pipefail
@@ -11,8 +12,12 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 IMAGE="tapbuy-ci-php83"
 REDIRECT_TRACKING="${SCRIPT_DIR}/../redirect-tracking"
+DATA_SCRUBBER="${SCRIPT_DIR}/../data-scrubber"
 FORTER="${SCRIPT_DIR}/../forter"
 CACHE_DIR="${HOME}/.tapbuy-ci-cache"
+
+# Keep in sync with ADYEN_MODULE_REF in .github/workflows/unit-tests.yml
+ADYEN_REF="9.3.0"
 
 if ! docker image inspect "$IMAGE" > /dev/null 2>&1; then
     echo "Building Docker image ${IMAGE} (first run only)..."
@@ -25,6 +30,12 @@ if [ ! -d "$REDIRECT_TRACKING" ]; then
     exit 1
 fi
 
+if [ ! -d "$DATA_SCRUBBER" ]; then
+    echo "Error: data-scrubber not found at ${DATA_SCRUBBER}" >&2
+    echo "Clone tapbuy/data-scrubber next to this module directory." >&2
+    exit 1
+fi
+
 if [ ! -d "$FORTER" ]; then
     echo "Error: forter not found at ${FORTER}" >&2
     echo "Clone tapbuy/magento2-forter next to this module directory." >&2
@@ -32,11 +43,14 @@ if [ ! -d "$FORTER" ]; then
 fi
 
 mkdir -p "$CACHE_DIR"
-if [ ! -f "${CACHE_DIR}/adyen-module-payment/registration.php" ]; then
-    echo "Cloning Adyen/adyen-magento2 (first run only)..."
+# Re-clone if the cached ref doesn't match the pinned ref.
+# To switch to a different ref: update ADYEN_REF above; this block will re-clone automatically.
+if [ "$(cat "${CACHE_DIR}/adyen-module-payment/.ref" 2>/dev/null)" != "${ADYEN_REF}" ]; then
+    echo "Cloning Adyen/adyen-magento2 @ ${ADYEN_REF}..."
     rm -rf "${CACHE_DIR}/adyen-module-payment"
-    git clone --depth 1 https://github.com/Adyen/adyen-magento2.git \
+    git clone --depth 1 --branch "${ADYEN_REF}" https://github.com/Adyen/adyen-magento2.git \
         "${CACHE_DIR}/adyen-module-payment"
+    echo "${ADYEN_REF}" > "${CACHE_DIR}/adyen-module-payment/.ref"
 fi
 
 if [ ! -f "${SCRIPT_DIR}/auth.json" ]; then
@@ -49,6 +63,7 @@ docker run --rm \
     -v "tapbuy-magento-2.4.7-p5-php83:/magento" \
     -v "${SCRIPT_DIR}:/module:ro" \
     -v "${REDIRECT_TRACKING}:/tapbuy-redirect-tracking:ro" \
+    -v "${DATA_SCRUBBER}:/tapbuy-data-scrubber:ro" \
     -v "${FORTER}:/tapbuy-forter:ro" \
     -v "${CACHE_DIR}/adyen-module-payment:/thirdparty-adyen:ro" \
     -v "${SCRIPT_DIR}/auth.json:/root/.composer/auth.json:ro" \

@@ -3,6 +3,7 @@
 # Expects volumes:
 #   /module                      — forter-adyen source (read-only)
 #   /tapbuy-redirect-tracking    — redirect-tracking source (read-only)
+#   /tapbuy-data-scrubber        — data-scrubber source (read-only)
 #   /tapbuy-forter               — forter source (read-only)
 #   /thirdparty-adyen            — Adyen/adyen-magento2 (read-only)
 set -euo pipefail
@@ -21,15 +22,22 @@ fi
 
 mkdir -p /magento/vendor/tapbuy
 rm -rf /magento/vendor/tapbuy/forter-adyen
+mkdir -p /magento/vendor/tapbuy/forter-adyen
+cp -rT /module /magento/vendor/tapbuy/forter-adyen
 rm -rf /magento/vendor/tapbuy/redirect-tracking
+mkdir -p /magento/vendor/tapbuy/redirect-tracking
+cp -rT /tapbuy-redirect-tracking /magento/vendor/tapbuy/redirect-tracking
+rm -rf /magento/vendor/tapbuy/data-scrubber
+mkdir -p /magento/vendor/tapbuy/data-scrubber
+cp -rT /tapbuy-data-scrubber /magento/vendor/tapbuy/data-scrubber
 rm -rf /magento/vendor/tapbuy/forter
-cp -r /module /magento/vendor/tapbuy/forter-adyen
-cp -r /tapbuy-redirect-tracking /magento/vendor/tapbuy/redirect-tracking
-cp -r /tapbuy-forter /magento/vendor/tapbuy/forter
+mkdir -p /magento/vendor/tapbuy/forter
+cp -rT /tapbuy-forter /magento/vendor/tapbuy/forter
 
 mkdir -p /magento/vendor/adyen
-rm -rf /magento/vendor/adyen/module-payment
-cp -r /thirdparty-adyen /magento/vendor/adyen/module-payment
+rm -rf /magento/vendor/adyen/payment
+mkdir -p /magento/vendor/adyen/payment
+cp -rT /thirdparty-adyen /magento/vendor/adyen/payment
 
 cat > /magento/vendor/tapbuy/bootstrap.php << 'BOOTSTRAP'
 <?php
@@ -38,8 +46,9 @@ require_once __DIR__ . '/../../dev/tests/unit/framework/bootstrap.php';
 $autoloader = include __DIR__ . '/../../vendor/autoload.php';
 $autoloader->addPsr4('Tapbuy\\ForterAdyen\\', __DIR__ . '/forter-adyen/');
 $autoloader->addPsr4('Tapbuy\\RedirectTracking\\', __DIR__ . '/redirect-tracking/');
+$autoloader->addPsr4('Tapbuy\\DataScrubber\\', __DIR__ . '/data-scrubber/src/');
 $autoloader->addPsr4('Tapbuy\\Forter\\', __DIR__ . '/forter/');
-$autoloader->addPsr4('Adyen\\Payment\\', __DIR__ . '/../adyen/module-payment/');
+$autoloader->addPsr4('Adyen\\Payment\\', __DIR__ . '/../adyen/payment/');
 BOOTSTRAP
 
 cd /magento
