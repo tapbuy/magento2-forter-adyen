@@ -38,6 +38,12 @@ jobs:
           repository: tapbuy/magento2-forter
           path: forter-module
 
+      - name: Checkout Adyen/adyen-magento2 dependency
+        uses: actions/checkout@v4
+        with:
+          repository: Adyen/adyen-magento2
+          path: adyen-module
+
       - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
@@ -70,6 +76,8 @@ jobs:
           cp -r module ~/magento/vendor/tapbuy/forter-adyen
           cp -r redirect-tracking-module ~/magento/vendor/tapbuy/redirect-tracking
           cp -r forter-module ~/magento/vendor/tapbuy/forter
+          mkdir -p ~/magento/vendor/adyen
+          cp -r adyen-module ~/magento/vendor/adyen/payment
 
       - name: Create test bootstrap
         run: |
@@ -81,6 +89,7 @@ jobs:
           $autoloader->addPsr4('Tapbuy\\ForterAdyen\\', __DIR__ . '/forter-adyen/');
           $autoloader->addPsr4('Tapbuy\\RedirectTracking\\', __DIR__ . '/redirect-tracking/');
           $autoloader->addPsr4('Tapbuy\\Forter\\', __DIR__ . '/forter/');
+          $autoloader->addPsr4('Adyen\\Payment\\', __DIR__ . '/../adyen/payment/');
           BOOTSTRAP
 
       - name: Run PHPUnit
