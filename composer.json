@@ -13,6 +13,9 @@
         "tapbuy/magento2-forter": "^1.2.1",
         "adyen/module-payment": "^8.0 || ^9.0 || ^10.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    },
     "autoload": {
         "files": [
             "registration.php"
@@ -20,5 +23,13 @@
         "psr-4": {
             "Tapbuy\\ForterAdyen\\": ""
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tapbuy\\ForterAdyen\\Test\\": "Test/"
+        }
+    },
+    "scripts": {
+        "test": "@php -r \"echo 'Run `make test` to run PHPUnit via Docker (matches CI environment).\\n'; exit(1);\""
     }
 }
