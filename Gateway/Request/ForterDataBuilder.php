@@ -131,17 +131,24 @@ class ForterDataBuilder implements BuilderInterface
         $recommendation = $recommendations[0];
         if ($recommendation === self::REQUIRED_3DS_CHALLENGE) {
             $requestBody['authenticationData']['attemptAuthentication'] = CheckoutDataInterface::THREE_DS_AUTH_ALWAYS;
-        } elseif (array_key_exists($recommendation, self::EXEMPTION_MAP)) {
+            return $requestBody;
+        }
+
+        if (array_key_exists($recommendation, self::EXEMPTION_MAP)) {
             $requestBody['additionalData']['scaExemption'] = self::EXEMPTION_MAP[$recommendation];
-        } elseif (in_array($recommendation, self::EXCLUSIONS, true) || $recommendation === '') {
+            return $requestBody;
+        }
+
+        if (in_array($recommendation, self::EXCLUSIONS, true) || $recommendation === '') {
             // Exclusion recommendation - use exclusion config from tapbuy-api
             $requestBody['authenticationData']['attemptAuthentication'] = $threeDsAuthOnExclusion;
-        } else {
-            $this->logger->warning(
-                'Unknown recommendation received from Forter',
-                ['recommendation' => $recommendation]
-            );
+            return $requestBody;
         }
+
+        $this->logger->warning(
+            'Unknown recommendation received from Forter',
+            ['recommendation' => $recommendation]
+        );
 
         return $requestBody;
     }
